@@ -1,147 +1,140 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <time.h>
 
-// Define a cell structure
 typedef struct {
-	unsigned int input : 4;
-	unsigned int output : 4;
-	unsigned int lookup0 : 16;
-	unsigned int lookup1 : 16;
-	unsigned int lookup2 : 16;
-	unsigned int lookup3 : 16;
+	bool input[4];  // Inputs from four rook-neighbors
+	bool output[4]; // Outputs to four rook-neighbors
+	uint64_t gates; // 64 bits to determine the four gates
 } Cell;
 
-int rows, cols;
-
-void process(Cell **grid) {
-	// Example usage: Process the grid
+void initialize_grid(Cell **grid, int rows, int cols) {
 	for (int i = 0; i < rows; i++) {
 		for (int j = 0; j < cols; j++) {
-			grid[i][j].output = grid[i][j].input;
+			for (int k = 0; k < 4; k++) {
+				grid[i][j].input[k] = false;
+				grid[i][j].output[k] = false;
+			}
+			grid[i][j].gates = 0; // Initialize gates to some default value
 		}
 	}
 }
 
-// run phase 1
-void run_phase1(Cell **grid) {
-	// Example usage: Run phase 1, all cells where (row + col) is even
+void random_seed_grid(Cell **grid, int rows, int cols) {
+	srand(time(NULL)); // Seed the random number generator
 	for (int i = 0; i < rows; i++) {
 		for (int j = 0; j < cols; j++) {
-			if ((i + j) % 2 == 0) {
-				// gather the inputs from the other cells
-				grid[i][j].input = 0;
-				grid[i][j].input = grid[i][j].input || (grid[i][(j+1)%cols].output >> 2) & 1;
-				grid[i][j].input = grid[i][j].input || (grid[i][(j-1+cols)%cols].output >> 0) & 4;
-				grid[i][j].input = grid[i][j].input || (grid[(i+1)%rows][j].output >> 1) & 2;
-				grid[i][j].input = grid[i][j].input || (grid[(i-1+rows)%rows][j].output >> 3) & 8;
-
-
-				grid[i][j].output = (grid[i][j].input * 0x11) >> 2;  // invert the input, for now
+			for (int k = 0; k < 4; k++) {
+				grid[i][j].input[k] = rand() % 2;  // Random boolean value
+				grid[i][j].output[k] = rand() % 2; // Random boolean value
 			}
 		}
 	}
 }
 
-//run phase 2
-void run_phase2(Cell **grid) {
-	// Example usage: Run phase 2, all cells where (row + col) is odd
+void print_grid(Cell **grid, int rows, int cols) {
 	for (int i = 0; i < rows; i++) {
 		for (int j = 0; j < cols; j++) {
-			if ((i + j) % 2 == 1) {
-				// gather the inputs from the other cells
-				grid[i][j].input = 0;
-				grid[i][j].input = grid[i][j].input || (grid[i][(j+1)%cols].output >> 2) & 1;
-				grid[i][j].input = grid[i][j].input || (grid[i][(j-1+cols)%cols].output >> 0) & 4;
-				grid[i][j].input = grid[i][j].input || (grid[(i+1)%rows][j].output >> 1) & 2;
-				grid[i][j].input = grid[i][j].input || (grid[(i-1+rows)%rows][j].output >> 3) & 8;
+			// Print the state of the cell
+			printf("Cell (%d, %d): ", i, j);
+			printf("Inputs: [");
+			for (int k = 0; k < 4; k++) {
+				printf("%d", grid[i][j].input[k]);
+				if (k < 3) printf(", ");
+			}
+			printf("], Outputs: [");
+			for (int k = 0; k < 4; k++) {
+				printf("%d", grid[i][j].output[k]);
+				if (k < 3) printf(", ");
+			}
+			printf("]\n");
+		}
+	}
+}
 
-				grid[i][j].output = (grid[i][j].input * 0x11) >> 2;  // invert the input, for now
+void run_phase1(Cell **grid, int rows, int cols) {
+	// Create a temporary grid to store the new inputs
+	bool temp_inputs[rows][cols][4];
+
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < cols; j++) {
+			for (int k = 0; k < 4; k++) {
+				temp_inputs[i][j][k] = grid[i][j].input[k];
+			}
+		}
+	}
+
+	// Update inputs based on neighbors' outputs
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < cols; j++) {
+			if (i > 0) temp_inputs[i][j][0] = grid[i-1][j].output[2]; // Top neighbor
+			if (j < cols - 1) temp_inputs[i][j][1] = grid[i][j+1].output[3]; // Right neighbor
+			if (i < rows - 1) temp_inputs[i][j][2] = grid[i+1][j].output[0]; // Bottom neighbor
+			if (j > 0) temp_inputs[i][j][3] = grid[i][j-1].output[1]; // Left neighbor
+		}
+	}
+
+	// Copy the temporary inputs back to the grid
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < cols; j++) {
+			for (int k = 0; k < 4; k++) {
+				grid[i][j].input[k] = temp_inputs[i][j][k];
 			}
 		}
 	}
 }
 
-void PrintGrid(Cell **grid)
-{
-    // print the grid
-    for (int i = 0; i < rows; i++)
-    {
-        for (int j = 0; j < cols; j++)
-        {
-            printf("%d -> %d ", grid[i][j].input, grid[i][j].output);
-        }
-        printf("\n");
-    }
+void run_phase2(Cell **grid, int rows, int cols) {
+	// Update outputs based on inputs and gates
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < cols; j++) {
+			for (int k = 0; k < 4; k++) {
+				// Example logic: output is the same as input
+				grid[i][j].output[k] = grid[i][j].input[k];
+			}
+		}
+	}
 }
 
-
-// Main function
 int main(int argc, char *argv[]) {
 	if (argc != 3) {
 		fprintf(stderr, "Usage: %s <rows> <cols>\n", argv[0]);
 		return 1;
 	}
 
-	rows = atoi(argv[1]);
-	cols = atoi(argv[2]);
+	int rows = atoi(argv[1]);
+	int cols = atoi(argv[2]);
 
-	if (rows <= 0 || cols <= 0 || rows % 2 != 0 || cols % 2 != 0) {
-		fprintf(stderr, "Error: rows and cols must be positive, even, integers.\n");
+	if (rows % 2 != 0 || cols % 2 != 0) {
+		fprintf(stderr, "Error: Both rows and cols must be even numbers.\n");
 		return 1;
 	}
 
-	// Allocate memory for the 2D array of Cells
 	Cell **grid = malloc(rows * sizeof(Cell *));
 	for (int i = 0; i < rows; i++) {
 		grid[i] = malloc(cols * sizeof(Cell));
 	}
 
-	// Example usage: Initialize the grid with some values
-	for (int i = 0; i < rows; i++) {
-		for (int j = 0; j < cols; j++) {
-			grid[i][j].input = 0;
-			grid[i][j].output = 0;
-			grid[i][j].lookup0 = 0;
-			grid[i][j].lookup1 = 0;
-			grid[i][j].lookup2 = 0;
-			grid[i][j].lookup3 = 0;
-		}
-	}
+	initialize_grid(grid, rows, cols);
 
-	printf("2D array of size %d x %d created.\n", rows, cols);
+	printf("Initial grid:\n");
+	print_grid(grid, rows, cols);
 
-	printf("Size of Cell: %lu\n", sizeof(Cell));
-	printf("Size of grid: %lu bytes\n", sizeof(Cell) * rows * cols);
+	printf("Randomly seeding the grid...\n");
+	random_seed_grid(grid, rows, cols);
+	print_grid(grid, rows, cols);
 
-    printf("Initial grid:\n");
-    PrintGrid(grid);
-
-	printf("seeding the grid...\n");
-	grid[1][1].output = 0xf;
-	PrintGrid(grid);
-
-	printf("Running phase 2...\n");
-	run_phase2(grid);
-
-	printf("After phase 2:\n");
-	PrintGrid(grid);
-
-
-
-	printf("Running phase 1...\n");
-	run_phase1(grid);
-
+	// Run your phases here
+	run_phase1(grid, rows, cols);
 	printf("After phase 1:\n");
-	PrintGrid(grid);
+	print_grid(grid, rows, cols);
 
-	printf("Running phase 2...\n");
-	run_phase2(grid);
-
+	run_phase2(grid, rows, cols);
 	printf("After phase 2:\n");
-	PrintGrid(grid);
+	print_grid(grid, rows, cols);
 
-
-    // Free the allocated memory
 	for (int i = 0; i < rows; i++) {
 		free(grid[i]);
 	}
