@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BitGrid Cell Simulator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>BitGrid Cell Simulator</h1>
+    <div class="container">
+        <div class="input-section">
+            <h2>Input Bits</h2>
+            <label><input type="checkbox" id="input0"> 0</label>
+            <label><input type="checkbox" id="input1"> 1</label>
+            <label><input type="checkbox" id="input2"> 2</label>
+            <label><input type="checkbox" id="input3"> 3</label>
+        </div>
+        <div class="lookup-section">
+            <h2>Lookup Bits</h2>
+            <div id="lookup0" class="lookup-bits">
+                <h3>Lookup 0</h3>
+                <!-- 16 checkboxes for lookup 0 -->
+                ${Array.from({ length: 16 }, (_, i) => `<label><input type="checkbox" id="lookup0_${i}"> ${i}</label>`).join('')}
+            </div>
+            <div id="lookup1" class="lookup-bits">
+                <h3>Lookup 1</h3>
+                <!-- 16 checkboxes for lookup 1 -->
+                ${Array.from({ length: 16 }, (_, i) => `<label><input type="checkbox" id="lookup1_${i}"> ${i}</label>`).join('')}
+            </div>
+            <div id="lookup2" class="lookup-bits">
+                <h3>Lookup 2</h3>
+                <!-- 16 checkboxes for lookup 2 -->
+                ${Array.from({ length: 16 }, (_, i) => `<label><input type="checkbox" id="lookup2_${i}"> ${i}</label>`).join('')}
+            </div>
+            <div id="lookup3" class="lookup-bits">
+                <h3>Lookup 3</h3>
+                <!-- 16 checkboxes for lookup 3 -->
+                ${Array.from({ length: 16 }, (_, i) => `<label><input type="checkbox" id="lookup3_${i}"> ${i}</label>`).join('')}
+            </div>
+        </div>
+        <button onclick="simulate()">Simulate</button>
+        <div class="output-section">
+            <h2>Output Bits</h2>
+            <div id="output0">0</div>
+            <div id="output1">0</div>
+            <div id="output2">0</div>
+            <div id="output3">0</div>
+        </div>
+    </div>
+    <script src="bitgrid_sim.js"></script>
+</body>
+</html>
