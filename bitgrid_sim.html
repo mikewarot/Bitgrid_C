@@ -20,26 +20,25 @@
             <h2>Lookup Bits</h2>
             <div id="lookup0" class="lookup-bits">
                 <h3>Lookup 0</h3>
-                <!-- 16 checkboxes for lookup 0 -->
-                ${Array.from({ length: 16 }, (_, i) => `<label><input type="checkbox" id="lookup0_${i}"> ${i}</label>`).join('')}
+                <!-- Placeholder for lookup 0 checkboxes -->
             </div>
             <div id="lookup1" class="lookup-bits">
                 <h3>Lookup 1</h3>
-                <!-- 16 checkboxes for lookup 1 -->
-                ${Array.from({ length: 16 }, (_, i) => `<label><input type="checkbox" id="lookup1_${i}"> ${i}</label>`).join('')}
+                <!-- Placeholder for lookup 1 checkboxes -->
             </div>
             <div id="lookup2" class="lookup-bits">
                 <h3>Lookup 2</h3>
-                <!-- 16 checkboxes for lookup 2 -->
-                ${Array.from({ length: 16 }, (_, i) => `<label><input type="checkbox" id="lookup2_${i}"> ${i}</label>`).join('')}
+                <!-- Placeholder for lookup 2 checkboxes -->
             </div>
             <div id="lookup3" class="lookup-bits">
                 <h3>Lookup 3</h3>
-                <!-- 16 checkboxes for lookup 3 -->
-                ${Array.from({ length: 16 }, (_, i) => `<label><input type="checkbox" id="lookup3_${i}"> ${i}</label>`).join('')}
+                <!-- Placeholder for lookup 3 checkboxes -->
             </div>
         </div>
         <button onclick="simulate()">Simulate</button>
+    </div>
+</body>
+</html>
         <div class="output-section">
             <h2>Output Bits</h2>
             <div id="output0">0</div>
@@ -48,6 +47,64 @@
             <div id="output3">0</div>
         </div>
     </div>
-    <script src="bitgrid_sim.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Function to create checkboxes for lookup bits
+            function createLookupCheckboxes(containerId) {
+                const container = document.getElementById(containerId);
+                for (let i = 0; i < 16; i++) {
+                    const label = document.createElement('label');
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.id = `${containerId}_${i}`;
+                    label.appendChild(checkbox);
+                    label.appendChild(document.createTextNode(` ${i}`));
+                    container.appendChild(label);
+                }
+            }
+
+            // Create checkboxes for each lookup section
+            createLookupCheckboxes('lookup0');
+            createLookupCheckboxes('lookup1');
+            createLookupCheckboxes('lookup2');
+            createLookupCheckboxes('lookup3');
+        });
+
+        function simulate() {
+            // Get input bits from checkboxes
+            const inputBits = [
+                document.getElementById('input0').checked ? 1 : 0,
+                document.getElementById('input1').checked ? 1 : 0,
+                document.getElementById('input2').checked ? 1 : 0,
+                document.getElementById('input3').checked ? 1 : 0
+            ];
+
+            // Get lookup bits from checkboxes
+            const lookupBits = [0, 1, 2, 3].map(index => {
+                return Array.from({ length: 16 }, (_, i) => document.getElementById(`lookup${index}_${i}`).checked ? '1' : '0').join('');
+            });
+
+            // Validate lookup bits
+            for (let i = 0; i < 4; i++) {
+                if (lookupBits[i].length !== 16 || !/^[01]+$/.test(lookupBits[i])) {
+                    alert(`Lookup bits for input ${i} must be exactly 16 bits long and contain only 0s and 1s.`);
+                    return;
+                }
+            }
+
+            // Calculate output bits
+            const outputBits = inputBits.map((bit, index) => {
+                const lookupIndex = parseInt(lookupBits[index], 2);
+                return (lookupIndex >> bit) & 1;
+            });
+
+            // Update output display
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`output${i}`).innerText = outputBits[i];
+            }
+        }
+    </script>
+</body>
+</html>
 </body>
 </html>
