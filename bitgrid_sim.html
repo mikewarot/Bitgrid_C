@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitgrid Simulator</title>
+    <style>
+        .bit-grid {
+            display: flex;
+            gap: 10px;
+        }
+        .bit-grid input {
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Bitgrid Simulator</h1>
+    
+    <div>
+        <h2>4-bit Input</h2>
+        <div class="bit-grid" id="bit-input">
+            <input type="checkbox" id="bit3">
+            <input type="checkbox" id="bit2">
+            <input type="checkbox" id="bit1">
+            <input type="checkbox" id="bit0">
+        </div>
+        <p>Index (Hex): <span id="index-hex">0</span></p>
+    </div>
+    
+    <div>
+        <h2>16-bit LUT Input</h2>
+        <div class="bit-grid" id="lut-input">
+            <input type="checkbox" id="lut0">
+            <input type="checkbox" id="lut1">
+            <input type="checkbox" id="lut2">
+            <input type="checkbox" id="lut3">
+            <input type="checkbox" id="lut4">
+            <input type="checkbox" id="lut5">
+            <input type="checkbox" id="lut6">
+            <input type="checkbox" id="lut7">
+            <input type="checkbox" id="lut8">
+            <input type="checkbox" id="lut9">
+            <input type="checkbox" id="lut10">
+            <input type="checkbox" id="lut11">
+            <input type="checkbox" id="lut12">
+            <input type="checkbox" id="lut13">
+            <input type="checkbox" id="lut14">
+            <input type="checkbox" id="lut15">
+        </div>
+    </div>
+    
+    <div>
+        <h2>Output</h2>
+        <p>Selected Bit: <span id="selected-bit">0</span></p>
+    </div>
+    
+    <script>
+        function updateOutput() {
+            // Read 4-bit input
+            let index = 0;
+            for (let i = 0; i < 4; i++) {
+                if (document.getElementById(`bit${i}`).checked) {
+                    index |= (1 << i);
+                }
+            }
+            
+            // Convert index to hex
+            document.getElementById('index-hex').innerText = index.toString(16).toUpperCase();
+            
+            // Read 16-bit LUT input
+            let lut = [];
+            for (let i = 0; i < 16; i++) {
+                lut[i] = document.getElementById(`lut${i}`).checked ? 1 : 0;
+            }
+            
+            // Select bit from LUT using index
+            let selectedBit = lut[index];
+            document.getElementById('selected-bit').innerText = selectedBit;
+        }
+        
+        // Add event listeners to all checkboxes
+        for (let i = 0; i < 4; i++) {
+            document.getElementById(`bit${i}`).addEventListener('change', updateOutput);
+        }
+        for (let i = 0; i < 16; i++) {
+            document.getElementById(`lut${i}`).addEventListener('change', updateOutput);
+        }
+        
+        // Initial update
+        updateOutput();
+    </script>
+</body>
+</html>
