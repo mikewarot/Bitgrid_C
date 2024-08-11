@@ -58,7 +58,7 @@
                     checkbox.type = 'checkbox';
                     checkbox.id = `${containerId}_${i}`;
                     label.appendChild(checkbox);
-                    label.appendChild(document.createTextNode(` ${i}`));
+                    // label.appendChild(document.createTextNode(` ${i}`));
                     container.appendChild(label);
                 }
             }
@@ -72,15 +72,23 @@
 
         function simulate() {
             // Get input bits from checkboxes
-            const inputBits = [
-                document.getElementById('input0').checked ? 1 : 0,
-                document.getElementById('input1').checked ? 1 : 0,
-                document.getElementById('input2').checked ? 1 : 0,
-                document.getElementById('input3').checked ? 1 : 0
-            ];
+            const index = 0;
+            if (document.getElementById('input0').checked) {
+                index += 1;
+            }
+            if (document.getElementById('input1').checked) {
+                index += 2;
+            }
+            if (document.getElementById('input2').checked) {
+                index += 4;
+            }
+            if (document.getElementById('input3').checked) {
+                index += 8;
+            }
+
 
             // Get lookup bits from checkboxes
-            const lookupBits = [0, 1, 2, 3].map(index => {
+            const lookupBits = [3,2,1,0].map(index => {
                 return Array.from({ length: 16 }, (_, i) => document.getElementById(`lookup${index}_${i}`).checked ? '1' : '0').join('');
             });
 
