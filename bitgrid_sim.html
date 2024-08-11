@@ -20,10 +20,10 @@
     <div>
         <h2>4-bit Input</h2>
         <div class="bit-grid" id="bit-input">
-            <input type="checkbox" id="bit3">
-            <input type="checkbox" id="bit2">
-            <input type="checkbox" id="bit1">
             <input type="checkbox" id="bit0">
+            <input type="checkbox" id="bit1">
+            <input type="checkbox" id="bit2">
+            <input type="checkbox" id="bit3">
         </div>
         <p>Index (Hex): <span id="index-hex">0</span></p>
     </div>
@@ -59,7 +59,7 @@
         function updateOutput() {
             // Read 4-bit input
             let index = 0;
-            for (let i = 0; i < 4; i++) {
+            for (let i = 3; i >= 0; i--) {
                 if (document.getElementById(`bit${i}`).checked) {
                     index |= (1 << i);
                 }
