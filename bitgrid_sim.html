@@ -18,7 +18,7 @@
     <h1>Bitgrid Simulator</h1>
     
     <div>
-        <h2>4-bit Input</h2>
+        <h2>4-bit Input - from neighbors</h2>
         <div class="bit-grid" id="bit-input">
             <input type="checkbox" id="bit0">
             <input type="checkbox" id="bit1">
@@ -48,6 +48,7 @@
             <input type="checkbox" id="lut14">
             <input type="checkbox" id="lut15">
         </div>
+        <p>LUT (Hex): <span id="lut-hex">0</span></p>
     </div>
     
     <div>
@@ -59,7 +60,7 @@
         function updateOutput() {
             // Read 4-bit input
             let index = 0;
-            for (let i = 3; i >= 0; i--) {
+            for (let i = 0; i < 4; i++) {
                 if (document.getElementById(`bit${i}`).checked) {
                     index |= (1 << i);
                 }
@@ -73,6 +74,15 @@
             for (let i = 0; i < 16; i++) {
                 lut[i] = document.getElementById(`lut${i}`).checked ? 1 : 0;
             }
+
+            //  Convert LUT bits to hex
+            let lutbits = 0;
+            for (let i = 0; i < 16; i++) {
+                lutbits |= (lut[i] << (i));
+            }
+            document.getElementById('lut-hex').innerText = lutbits.toString(16).toUpperCase();
+
+            
             
             // Select bit from LUT using index
             let selectedBit = lut[index];
