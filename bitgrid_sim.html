@@ -26,32 +26,31 @@
             <input type="checkbox" id="bit0">
         </div>
         <p>Index (Hex): <span id="index-hex">0</span></p>
-    </div>
-    
-    <div>
-        <h2>16-bit LUT Input</h2>
-        <div class="bit-grid" id="lut-input">
-            <input type="checkbox" id="lut0">
-            <input type="checkbox" id="lut1">
-            <input type="checkbox" id="lut2">
-            <input type="checkbox" id="lut3">
-            <input type="checkbox" id="lut4">
-            <input type="checkbox" id="lut5">
-            <input type="checkbox" id="lut6">
-            <input type="checkbox" id="lut7">
-            <input type="checkbox" id="lut8">
-            <input type="checkbox" id="lut9">
-            <input type="checkbox" id="lut10">
-            <input type="checkbox" id="lut11">
-            <input type="checkbox" id="lut12">
-            <input type="checkbox" id="lut13">
-            <input type="checkbox" id="lut14">
-            <input type="checkbox" id="lut15">
+        <div>
+            <h2>16-bit LUT Input</h2>
+            <div class="bit-grid" id="lut-input">
+                <input type="checkbox" id="lut0">
+                <input type="checkbox" id="lut1">
+                <input type="checkbox" id="lut2">
+                <input type="checkbox" id="lut3">
+                <input type="checkbox" id="lut4">
+                <input type="checkbox" id="lut5">
+                <input type="checkbox" id="lut6">
+                <input type="checkbox" id="lut7">
+                <input type="checkbox" id="lut8">
+                <input type="checkbox" id="lut9">
+                <input type="checkbox" id="lut10">
+                <input type="checkbox" id="lut11">
+                <input type="checkbox" id="lut12">
+                <input type="checkbox" id="lut13">
+                <input type="checkbox" id="lut14">
+                <input type="checkbox" id="lut15">
+            </div>
+            <p>LUT (Hex): <span id="lut-hex">0</span></p>
+            <p>LUT Description: <span id="lut-desc">nop</span></p>
         </div>
-        <p>LUT (Hex): <span id="lut-hex">0</span></p>
-        <p>LUT Description: <span id="lut-desc">nop</span></p>
     </div>
-    
+     
     <!-- Example input for logical expression -->
     <div>
         <label for="logical-expression">Logical Expression:</label>
@@ -59,18 +58,11 @@
         <button onclick="compileExpressionToLUT()">Compile</button>
     </div>
 
-    <!-- Example output elements -->
-    <div id="outputs">
-        <h3>LUT Bits (Hex)</h3>
-        <span id="lut-hex"></span>
-        <h3>LUT Description</h3>
-        <span id="lut-desc"></span>
-    </div>
-
     <script>
+        const lut = new Array(16).fill(0);
+
         function compileExpressionToLUT() {
             const expression = document.getElementById('logical-expression').value;
-            const lut = new Array(16).fill(0);
 
             for (let i = 0; i < 16; i++) {
                 const A = (i & 1) !== 0;
@@ -90,12 +82,21 @@
                 lut[i] = eval(evalExpression) ? 1 : 0;
             }
 
+            updateLUTDisplay();
+        }
+
+        function updateLUTDisplay() {
             // Convert LUT bits to hex
             let lutbits = 0;
             for (let i = 0; i < 16; i++) {
                 lutbits |= (lut[i] << i);
             }
             document.getElementById('lut-hex').innerText = lutbits.toString(16).toUpperCase();
+
+            // Update checkboxes based on LUT bits
+            for (let i = 0; i < 16; i++) {
+                document.getElementById(`lut${i}`).checked = lut[i] === 1;
+            }
 
             // Compute a description of the LUT bits as a logical expression of the input bits
             let lutDesc = '';
@@ -119,6 +120,16 @@
                 }
             }
             document.getElementById('lut-desc').innerText = lutDesc; // Update the description of the LUT bits
+        }
+
+        function onLUTCheckboxChange(index) {
+            lut[index] = document.getElementById(`lut${index}`).checked ? 1 : 0;
+            updateLUTDisplay();
+        }
+
+        // Add event listeners to LUT checkboxes
+        for (let i = 0; i < 16; i++) {
+            document.getElementById(`lut${i}`).addEventListener('change', () => onLUTCheckboxChange(i));
         }
     </script>
 </body>
