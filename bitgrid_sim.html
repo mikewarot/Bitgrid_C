@@ -9,8 +9,14 @@
             display: flex;
             gap: 10px;
         }
-        .bit-grid input {
+        .bit-grid checkbox {
+            display: block;
+            width: 30px;
+            height: 30px;
             margin: 5px;
+            box-sizing: border-box;
+            padding: 5;
+            accent-color: #673ab7;
         }
     </style>
 </head>
@@ -94,18 +100,21 @@
             for (let i = 0; i < 16; i++) {
                 lutbits |= (lut[i] << i);
             }
+            document.getElementById('lut-hex').innerText = lutbits.toString(16).toUpperCase();
+
+
             // Convert input bits to binary
             let index = 0;
             for (let i = 0; i < 4; i++) {
                 index |= (document.getElementById(`bit${i}`).checked ? 1 : 0) << i;
             }
-            document.getElementById('lut-hex').innerText = lutbits.toString(16).toUpperCase();
+            document.getElementById('index-hex').innerText = index.toString(16).toUpperCase();
 
             // Update checkboxes based on LUT bits
             for (let i = 0; i < 16; i++) {
                 document.getElementById(`lut${i}`).checked = lut[i] === 1;
                 document.getElementById(`lut${i}`).classList.remove('highlight');
-                if (i==index) {
+                if (i===index) {
                     document.getElementById(`lut${i}`).classList.add('highlight');
                 }
             }
@@ -143,27 +152,9 @@
         for (let i = 0; i < 16; i++) {
             document.getElementById(`lut${i}`).addEventListener('change', () => onLUTCheckboxChange(i));
         }
-
-        document.addEventListener('DOMContentLoaded', (event) => {
-            const bitCheckboxes = ['bit0', 'bit1', 'bit2', 'bit3'].map(id => document.getElementById(id));
-
-            bitCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', highlightLUTCheckbox);
-            });
-
-            function highlightLUTCheckbox() {
-                const bitValues = bitCheckboxes.map(checkbox => checkbox.checked ? 1 : 0);
-                const index = bitValues.reduce((acc, val, i) => acc + (val << i), 0);
-
-                // Remove highlight from all LUT checkboxes
-                for (let i = 0; i < 16; i++) {
-                    document.getElementById(`lut${i}`).classList.remove('highlight');
-                }
-
-                // Highlight the appropriate LUT checkbox
-                document.getElementById(`lut${index}`).classList.add('highlight');
-            }
-        });
+        for (let i = 0; i < 4; i++) {
+            document.getElementById(`bit${i}`).addEventListener('change', () => onLUTCheckboxChange(i));
+        }
     </script>
 </body>
 </html>
