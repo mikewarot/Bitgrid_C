@@ -35,28 +35,25 @@
         <div>
             <h2>16-bit LUT Input</h2>
             <div class="bit-grid" id="lut-input">
-                <input type="checkbox" id="lut0">
-                <input type="checkbox" id="lut1">
-                <input type="checkbox" id="lut2">
-                <input type="checkbox" id="lut3">
-                <input type="checkbox" id="lut4">
-                <input type="checkbox" id="lut5">
-                <input type="checkbox" id="lut6">
-                <input type="checkbox" id="lut7">
-                <input type="checkbox" id="lut8">
-                <input type="checkbox" id="lut9">
-                <input type="checkbox" id="lut10">
-                <input type="checkbox" id="lut11">
-                <input type="checkbox" id="lut12">
-                <input type="checkbox" id="lut13">
-                <input type="checkbox" id="lut14">
-                <input type="checkbox" id="lut15">
+                <label for="lut0">*</label><input type="checkbox" id="lut0">
+                <label for="lut1"> </label><input type="checkbox" id="lut1">
+                <label for="lut2"> </label><input type="checkbox" id="lut2">
+                <label for="lut3"> </label><input type="checkbox" id="lut3">
+                <label for="lut4"> </label><input type="checkbox" id="lut4">
+                <label for="lut5"> </label><input type="checkbox" id="lut5">
+                <label for="lut6"> </label><input type="checkbox" id="lut6">
+                <label for="lut7"> </label><input type="checkbox" id="lut7">
+                <label for="lut8"> </label><input type="checkbox" id="lut8">
+                <label for="lut9"> </label><input type="checkbox" id="lut9">
+                <label for="lut10"> </label><input type="checkbox" id="lut10">
+                <label for="lut11"> </label><input type="checkbox" id="lut11">
+                <label for="lut12"> </label><input type="checkbox" id="lut12">
+                <label for="lut13"> </label><input type="checkbox" id="lut13">
+                <label for="lut14"> </label><input type="checkbox" id="lut14">
+                <label for="lut15"> </label><input type="checkbox" id="lut15">
             </div>
             <p>LUT (Hex): <span id="lut-hex">0</span></p>
             <p>LUT Description: <span id="lut-desc">nop</span></p>
-        </div>
-        <div>
-            <label for="logical-expression">Logical Expression:</label>
         </div>
     </div>
      
@@ -104,18 +101,20 @@
 
 
             // Convert input bits to binary
-            let index = 0;
+            let input_index = 0;
             for (let i = 0; i < 4; i++) {
-                index |= (document.getElementById(`bit${i}`).checked ? 1 : 0) << i;
+                input_index |= (document.getElementById(`bit${i}`).checked ? 1 : 0) << i;
             }
-            document.getElementById('index-hex').innerText = index.toString(16).toUpperCase();
+            document.getElementById('index-hex').innerText = input_index.toString(16).toUpperCase();
 
             // Update checkboxes based on LUT bits
             for (let i = 0; i < 16; i++) {
                 document.getElementById(`lut${i}`).checked = lut[i] === 1;
-                document.getElementById(`lut${i}`).classList.remove('highlight');
-                if (i===index) {
-                    document.getElementById(`lut${i}`).classList.add('highlight');
+                if (i===input_index) {
+                    // set the label of the checkbox to * to indicate the current input
+                    document.getElementById(`lut${i}`).labels[0].innerText = '*';
+                } else {
+                    document.getElementById(`lut${i}`).labels[0].innerText = ' ';
                 }
             }
 
