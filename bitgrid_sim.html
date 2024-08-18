@@ -94,11 +94,20 @@
             for (let i = 0; i < 16; i++) {
                 lutbits |= (lut[i] << i);
             }
+            // Convert input bits to binary
+            let index = 0;
+            for (let i = 0; i < 4; i++) {
+                index |= (document.getElementById(`bit${i}`).checked ? 1 : 0) << i;
+            }
             document.getElementById('lut-hex').innerText = lutbits.toString(16).toUpperCase();
 
             // Update checkboxes based on LUT bits
             for (let i = 0; i < 16; i++) {
                 document.getElementById(`lut${i}`).checked = lut[i] === 1;
+                document.getElementById(`lut${i}`).classList.remove('highlight');
+                if (i==index) {
+                    document.getElementById(`lut${i}`).classList.add('highlight');
+                }
             }
 
             // Compute a description of the LUT bits as a logical expression of the input bits
@@ -134,6 +143,27 @@
         for (let i = 0; i < 16; i++) {
             document.getElementById(`lut${i}`).addEventListener('change', () => onLUTCheckboxChange(i));
         }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const bitCheckboxes = ['bit0', 'bit1', 'bit2', 'bit3'].map(id => document.getElementById(id));
+
+            bitCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', highlightLUTCheckbox);
+            });
+
+            function highlightLUTCheckbox() {
+                const bitValues = bitCheckboxes.map(checkbox => checkbox.checked ? 1 : 0);
+                const index = bitValues.reduce((acc, val, i) => acc + (val << i), 0);
+
+                // Remove highlight from all LUT checkboxes
+                for (let i = 0; i < 16; i++) {
+                    document.getElementById(`lut${i}`).classList.remove('highlight');
+                }
+
+                // Highlight the appropriate LUT checkbox
+                document.getElementById(`lut${index}`).classList.add('highlight');
+            }
+        });
     </script>
 </body>
 </html>
