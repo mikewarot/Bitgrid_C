@@ -52,44 +52,58 @@
         <p>LUT Description: <span id="lut-desc">nop</span></p>
     </div>
     
+    <!-- Example input for logical expression -->
     <div>
-        <h2>Output</h2>
-        <p>Selected Bit: <span id="selected-bit">0</span></p>
+        <label for="logical-expression">Logical Expression:</label>
+        <input type="text" id="logical-expression" placeholder="Enter logical expression (e.g., A & B | ~C & D)">
+        <button onclick="compileExpressionToLUT()">Compile</button>
     </div>
-    
+
+    <!-- Example output elements -->
+    <div id="outputs">
+        <h3>LUT Bits (Hex)</h3>
+        <span id="lut-hex"></span>
+        <h3>LUT Description</h3>
+        <span id="lut-desc"></span>
+    </div>
+
     <script>
-        function updateOutput() {
-            // Read 4-bit input
-            let index = 0;
-            for (let i = 0; i < 4; i++) {
-                if (document.getElementById(`bit${i}`).checked) {
-                    index |= (1 << i);
-                }
-            }
-            
-            // Convert index to hex
-            document.getElementById('index-hex').innerText = index.toString(16).toUpperCase();
-            
-            // Read 16-bit LUT input
-            let lut = [];
+        function compileExpressionToLUT() {
+            const expression = document.getElementById('logical-expression').value;
+            const lut = new Array(16).fill(0);
+
             for (let i = 0; i < 16; i++) {
-                lut[i] = document.getElementById(`lut${i}`).checked ? 1 : 0;
+                const A = (i & 1) !== 0;
+                const B = (i & 2) !== 0;
+                const C = (i & 4) !== 0;
+                const D = (i & 8) !== 0;
+
+                const evalExpression = expression
+                    .replace(/A/g, A)
+                    .replace(/B/g, B)
+                    .replace(/C/g, C)
+                    .replace(/D/g, D)
+                    .replace(/~/g, '!')
+                    .replace(/&/g, '&&')
+                    .replace(/\|/g, '||');
+
+                lut[i] = eval(evalExpression) ? 1 : 0;
             }
 
-            //  Convert LUT bits to hex
+            // Convert LUT bits to hex
             let lutbits = 0;
             for (let i = 0; i < 16; i++) {
-                lutbits |= (lut[i] << (i));
+                lutbits |= (lut[i] << i);
             }
             document.getElementById('lut-hex').innerText = lutbits.toString(16).toUpperCase();
 
-            // compute a description of the LUT bits as a logical expression of the input bits
+            // Compute a description of the LUT bits as a logical expression of the input bits
             let lutDesc = '';
             for (let i = 0; i < 16; i++) {
-                if (lut[i] == 1) {
+                if (lut[i] === 1) {
                     let term = '';
                     for (let j = 0; j < 4; j++) {
-                        if ((i & (1 << j)) != 0) {
+                        if ((i & (1 << j)) !== 0) {
                             term += `bit${j}`;
                         } else {
                             term += `~bit${j}`;
@@ -104,26 +118,8 @@
                     lutDesc += `(${term})`;
                 }
             }
-            document.getElementById('lut-desc').innerText = lutDesc; // update the description of the LUT bits
-
-
-
-            
-            // Select bit from LUT using index
-            let selectedBit = lut[index];
-            document.getElementById('selected-bit').innerText = selectedBit;
+            document.getElementById('lut-desc').innerText = lutDesc; // Update the description of the LUT bits
         }
-        
-        // Add event listeners to all checkboxes
-        for (let i = 0; i < 4; i++) {
-            document.getElementById(`bit${i}`).addEventListener('change', updateOutput);
-        }
-        for (let i = 0; i < 16; i++) {
-            document.getElementById(`lut${i}`).addEventListener('change', updateOutput);
-        }
-        
-        // Initial update
-        updateOutput();
     </script>
 </body>
 </html>
