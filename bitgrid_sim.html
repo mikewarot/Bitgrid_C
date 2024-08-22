@@ -22,6 +22,9 @@
 </head>
 <body>
     <h1>Bitgrid Simulator</h1>
+    <p>Here is a simple simulator for a single bitgrid cell. There are 4 bits input from the neighbors, 
+    which results in an index between 0 and 15. Each possible combination has a bit in the look up table (LUT), 
+    which then feeds an output bit to a neighbor.</p>
     
     <div>
         <h2>4-bit Input</h2>
@@ -34,6 +37,9 @@
         <p>Index (Hex): <span id="index-hex">0</span></p>
         <div>
             <h2>16-bit LUT Input</h2>
+            <p>Each possible input combination links to one of these checkboxes.
+            The current input is marked with an asterisk (*).
+            </p>
             <div class="bit-grid" id="lut-input">
                 <label for="lut0">*</label><input type="checkbox" id="lut0">
                 <label for="lut1"> </label><input type="checkbox" id="lut1">
@@ -53,6 +59,7 @@
                 <label for="lut15"> </label><input type="checkbox" id="lut15">
             </div>
             <p>LUT (Hex): <span id="lut-hex">0</span></p>
+            <p><i>This is the resulting value from all of the bits you entered, in hexadecimal</i></p>
             <p>LUT Description: <span id="lut-desc">nop</span></p>
         </div>
     </div>
