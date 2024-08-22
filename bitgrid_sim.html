@@ -66,7 +66,7 @@
      
     <!-- Example input for logical expression -->
     <div>
-        <label for="logical-expression">Logical Expression:</label>
+        <label for="logical-expression">Enter a logical expression of A,B,C,D:</label>
         <input type="text" id="logical-expression" placeholder="Enter logical expression (e.g., A & B | ~C & D)">
         <button onclick="compileExpressionToLUT()">Compile</button>
     </div>
@@ -84,10 +84,10 @@
                 const D = (i & 8) !== 0;
 
                 const evalExpression = expression
-                    .replace(/A/g, A)
-                    .replace(/B/g, B)
-                    .replace(/C/g, C)
-                    .replace(/D/g, D)
+                    .replace(/A/gi, A)
+                    .replace(/B/gi, B)
+                    .replace(/C/gi, C)
+                    .replace(/D/gi, D)
                     .replace(/~/g, '!')
                     .replace(/&/g, '&&')
                     .replace(/\|/g, '||');
